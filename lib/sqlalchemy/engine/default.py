@@ -124,7 +124,7 @@ class DefaultDialect(interfaces.Dialect):
             })
         ]
 
-    If the above construct is established on the PostgreSQL dialect,
+    If the above construct is established on the Postgresql dialect,
     the :class:`.Index` construct will now accept the keyword arguments
     ``postgresql_using``, ``postgresql_where``, nad ``postgresql_ops``.
     Any other argument specified to the constructor of :class:`.Index`
@@ -456,7 +456,11 @@ class DefaultDialect(interfaces.Dialect):
         connection.execute(expression.ReleaseSavepointClause(name))
 
     def do_executemany(self, cursor, statement, parameters, context=None):
-        cursor.executemany(statement, parameters)
+        if "ceODBC"in str(cursor):
+            param_list = [tuple(x) for x in parameters]
+            cursor.executemany(statement, param_list)
+        else:
+            cursor.executemany(statement, parameters)
 
     def do_execute(self, cursor, statement, parameters, context=None):
         cursor.execute(statement, parameters)
